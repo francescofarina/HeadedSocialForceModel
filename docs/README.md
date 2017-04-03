@@ -4,7 +4,7 @@ The Headed Social Force Model (HSFM) is an enhancement of the traditional Social
 
 ![Image](analysis.jpg)
 
-The Headed Social Force Model has been introduced in our recent work [Walking Ahead: The Headed Social Force Model](http://dx.doi.org/10.1371/journal.pone.0169734). You can cite that article if you this code and our model for your research.
+The Headed Social Force Model has been introduced in our recent work [Walking Ahead: The Headed Social Force Model](http://dx.doi.org/10.1371/journal.pone.0169734). You can cite that article if you use this code and our model for your research.
 
 At this time only the MATLAB implementation of the model is available. However, a Python implementation is under development.
 
