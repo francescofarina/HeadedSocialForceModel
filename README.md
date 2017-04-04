@@ -15,7 +15,4 @@ A preliminary version of the model has been presented in:
 
 You can cite these article if you use this code and our model for your research.
 
-A preliminary version of the model has been presented in:
->[Farina, F., Fontanelli, D., Garulli, A., Giannitrapani, A., & Prattichizzo, D. (2016, December). When Helbing meets Laumond: The Headed Social Force Model. In Decision and Control (CDC), 2016 IEEE 55th Conference on (pp. 3548-3553). IEEE.](10.1109/CDC.2016.7798802)
-
 At this time only the MATLAB implementation of the model is available. However, a Python implementation is under development.
