@@ -13,7 +13,6 @@ global A
 global B 
 global Aw
 global Bw
-
 global k1 
 global k2 
 global e_act 

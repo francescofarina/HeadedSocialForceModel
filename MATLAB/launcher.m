@@ -29,7 +29,8 @@ global ps
 global num_walls 
 global map_walls 
 global alfa
-global Kd Ko
+global kd ko k1g k2g
+global d_o d_f
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -49,27 +50,30 @@ num_walls = dnum_walls/2;
 TF=20;
 t_fine=1/30; % timing accuracy in the movie (framerate=30)
 
-% CAO
+% SFM Parameters
 tau=0.5; 
 A=2000;
 B=0.08;%0.8
-C=880;
-D=0.2;
 Aw=2000;
 Bw=0.08;
 beta2=3;
 k1=1.2*10^5;
 k2=2.4*10^5;
-Kd=500;
-Ko=1;
+% HSFM Parameters
+kd=500;
+ko=1;
+k1g=200; % forward group cohesione force strength
+k2g=200; % sideward group cohesione force strength
+d_o=0.5; % sideward maximum distance from the center of mass
+d_f=1;   % forward maximum distance from the center of mass   
 
 % indivial characteristics
 % Radius
 rm=0.25; % minimum radius
-rM=0.25; % maximum radius
+rM=0.35; % maximum radius
 % Mass
 mm=60; % minimum mass
-mM=60; % maximum mass
+mM=90; % maximum mass
 % Desired speed
 v0m=1; % minimum velocity
 v0M=1; % maximum velocity
@@ -79,7 +83,7 @@ v0M=1; % maximum velocity
 % Number of individuals in each group
 % Define n_i the number of individuals in group i, then
 % n_groups = [n_1, n_2, ..., n_N];
-n_groups = [5 5];
+n_groups = [6 6];
 % Total number of individuals
 N=sum(n_groups);
 
@@ -117,8 +121,8 @@ e_ind=cell(0);
 % e_seq{i} contains the points through which the members of group i have to
 % pass
 
-e_seq{1}=[2.5 1000]';
-e_seq{2}=[2.5 -1000]';
+e_seq{1}=[3 10; 2.5 1000]';
+e_seq{2}=[2 10; 2.5 -1000]';
 
 for i=1:length(n_groups)
     [~,e_n{i}]=size(e_seq{i});      % number of waypoints of group i
@@ -136,7 +140,8 @@ end
 % System initialization
 p=zeros(N,6);
 p(1,:)=[s{1}(1)-am+2*am*rand(1,1) s{1}(2)-am+2*am*rand(1,1) v(1,:)  r(i) m(i)];
-X1=[p(1,1:2) th(1) norm(v(1,:)) 0 omg]; % initial HSFM state vector (1,4*N) -> [Position Heading Speed 0 Angular_velocity]
+% initial HSFM state vector (1,4*N) -> [Position Heading Speed 0 Angular_velocity]
+X1=[p(1,1:2) th(1) norm(v(1,:)) 0 omg]; 
 i=2;
 % random initial positions
 while i<=N
@@ -172,7 +177,8 @@ end
 ps=p(:,1:2);
 e_act{1}=ps(1:n_groups(1),:);
 for i=2:length(n_groups)
-    e_act{i}=ps(sum(n_groups(1:i-1))+1:sum(n_groups(1:i)),:); % current waypoint
+     % current waypoint
+    e_act{i}=ps(sum(n_groups(1:i-1))+1:sum(n_groups(1:i)),:);
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%% System simulation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
