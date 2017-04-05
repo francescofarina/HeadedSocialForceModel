@@ -62,12 +62,12 @@ k2=2.4*10^5;
 % HSFM Parameters
 kd=500;
 ko=1;
-k1g=200; % forward group cohesione force strength
-k2g=200; % sideward group cohesione force strength
+k1g=200; % forward group cohesion force strength
+k2g=200; % sideward group cohesion force strength
 d_o=0.5; % sideward maximum distance from the center of mass
 d_f=1;   % forward maximum distance from the center of mass   
 
-% indivial characteristics
+% individual characteristics
 % Radius
 rm=0.25; % minimum radius
 rM=0.35; % maximum radius
@@ -79,7 +79,7 @@ v0m=1; % minimum velocity
 v0M=1; % maximum velocity
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%% Iinitial conditions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%% Initial conditions %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Number of individuals in each group
 % Define n_i the number of individuals in group i, then
 % n_groups = [n_1, n_2, ..., n_N];
