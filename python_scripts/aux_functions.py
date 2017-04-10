@@ -13,3 +13,4 @@ def map_def():
     map_walls = map_walls[1:]
 
     return map_walls
+
