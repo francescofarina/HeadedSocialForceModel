@@ -1,14 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.integrate import odeint
-from HeadedSocialForceModel.python_scripts.aux_functions import parameters_load, initialization, waypoints_updater
-from HeadedSocialForceModel.python_scripts.HSFM_functions import HSFM_forces
+from scipy.integrate import odeint, ode
+from aux_functions import parameters_load, initialization, waypoints_updater
+from HSFM_functions import HSFM_forces
 
 
 global waypoints
 
 
-def HSFM_system(X, t, N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership):
+def HSFM_system(t, X, N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership):
     global waypoints
     tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f, alpha = parameters_load()
 
@@ -16,10 +16,10 @@ def HSFM_system(X, t, N, n_groups, map_walls, num_walls, r, m, J, v0, group_memb
     position = np.zeros((N, 2))
     vel = np.zeros((N, 2))
     for i in range(N):
-        position[i,:] = [X[6 * i - 6], X[6 * i - 5]]
-        vel[i,:] = [X[6 * i - 3] * np.cos(X[6 * i - 4]), X[6 * i - 3] * np.sin(X[6 * i - 4])]
+        position[i, :] = [X[6 * i], X[6 * i + 1]]
+        vel[i, :] = [X[6 * i + 3] * np.cos(X[6 * i + 2]), X[6 * i + 3] * np.sin(X[6 * i + 2])]
 
-    e, e_act, e_ind, e_n, e_seq = waypoints.waypoint_update(position, 0.5)
+    e, e_act, e_ind, e_n, e_seq = waypoints.waypoint_update(position, 1.5)
 
     # Acting forces
     F0, Fe, ang = HSFM_forces(X, e, N, map_walls, num_walls, r, m, v0)
@@ -29,15 +29,15 @@ def HSFM_system(X, t, N, n_groups, map_walls, num_walls, r, m, J, v0, group_memb
     F_nV=(np.sqrt(np.sum(np.abs(F0)**2, 1)))
 
     #  desired theta
-    thr=np.mod(ang, 2*np.pi).flatten()
+    thr = np.mod(ang, 2*np.pi).flatten()
 
     # actual theta
     th = np.mod(X.__getitem__(slice(2, None, 6)), 2*np.pi)
 
     # angle to rotate
-    ang = th - thr
-    td = np.vstack((ang, ang+2*np.pi, ang-2*np.pi))
-    I = np.argmin(np.abs(td), 0)
+    ang = np.unwrap(th - thr)
+    # td = np.vstack((ang, ang+2*np.pi, ang-2*np.pi))
+    # I = np.argmin(np.abs(td), 0)
 
     dX = np.zeros((6*N,1)).flatten()
 
@@ -53,7 +53,7 @@ def HSFM_system(X, t, N, n_groups, map_walls, num_walls, r, m, J, v0, group_memb
         ci[k] = ci[k] / n_groups[k]
 
     for i in range(N):
-        a = td[I[i], i]
+        a = ang[i]#td[I[i], i]
         kl = 0.3
         kth = J[i] * kl * F_nV[i]
         kom = J[i] * (1+alpha) * np.sqrt(kl * F_nV[i] / alpha)
@@ -79,7 +79,7 @@ def HSFM_system(X, t, N, n_groups, map_walls, num_walls, r, m, J, v0, group_memb
 
 # Simulation time
 TF = 20
-t_fine = 1/30  # timing accuracy in the movie (framerate=30)
+t_fine = 1/30  # time accuracy
 
 tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f, alpha = parameters_load()
 
@@ -138,8 +138,37 @@ for i in range(N):
 
 waypoints = waypoints_updater(e_seq, e_n, e_ind, e_act, N, n_groups, group_membership)
 
-# TODO: Integration through ODE and debugging
-t = np.linspace(0, 0.1, 10)
-sol = odeint(HSFM_system, X0, t, args=(N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership))
-#############################################
+
+# System evolution
+sol = ode(HSFM_system).set_integrator('dopri5')
+t_start = 0.0
+t_final = TF
+delta_t = t_fine
+# Number of time steps: 1 extra for initial condition
+num_steps = int(np.floor((t_final - t_start)/delta_t) + 1)
+sol.set_initial_value(X0, t_start)
+sol.set_f_params(N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership)
+
+t = np.zeros((num_steps, 1))
+X = np.zeros((num_steps, N*6))
+t[0] = t_start
+X[0] = X0
+k = 1
+while sol.successful() and k < num_steps:
+    sol.integrate(sol.t + delta_t)
+    t[k] = sol.t
+    X[k] = sol.y
+    print(sol.t)
+    k += 1
+
+
+# Plotting
+colors = {0: "#0066CC", 1: "#006600"}
+plt.figure()
+plt.plot(X[0].__getitem__(slice(0, None, 6)), X[0].__getitem__(slice(1, None, 6)), 'ro')
+for i in range(N):
+    plt.plot(X[:, 6*i],X[:, 6*i+1], color=colors[int(group_membership[i])])
+plt.axis('equal')
+plt.savefig('tyajectories.eps')
+
 

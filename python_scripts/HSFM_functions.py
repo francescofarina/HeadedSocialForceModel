@@ -8,8 +8,8 @@ def HSFM_forces(X, e, N, map_walls, num_walls, r, m, v0):
     position = np.zeros((N, 2))
     vel = np.zeros((N, 2))
     for i in range(N):
-        position[i, :] = [X[6 * i - 6], X[6 * i - 5]]
-        vel[i, :] = [X[6 * i - 3] * np.cos(X[6 * i - 4]), X[6 * i - 3] * np.sin(X[6 * i - 4])]
+        position[i, :] = [X[6 * i], X[6 * i+1]]
+        vel[i, :] = [X[6 * i+3] * np.cos(X[6 * i+2]), X[6 * i +3] * np.sin(X[6 * i +2])]
 
     fi0 = np.zeros((N, 2))  # velocity force
     # Interindividual forces
@@ -37,35 +37,35 @@ def HSFM_forces(X, e, N, map_walls, num_walls, r, m, v0):
                     dvij = np.dot((vel[j] - vel[i]), tij)
                     fij3[i] = fij3[i] + k2 * (rij - dij) * dvij * tij
 
-            # Walls forces
-            for w in range(num_walls):
-                xp = position[i,0]
-                yp = position[i,1]
-                rp = np.array(position[i])
-                ra = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
-                ra = np.array(ra)
-                rb = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
-                rb = np.array(rb)
-                xa = ra[0]
-                ya = ra[1]
-                xb = rb[0]
-                yb = rb[1]
-                # a point on AB can be parametrized as s(t)=ra+t(tb-ta), t in [0,1]
-                # distance from s to p is phi(t)=||s(t)-p||
-                # d(phi^2) gives the t which minimizes the distance from p to the
-                # line in which AB lives. Since t in [0,1], t_star=min(max(0,t),1);
-                # and the distance from p to AB is ||s(t_star)-p||
-
-                t = ((xp - xa) * (xb - xa) + (yp - ya) * (yb - ya)) / ((xb - xa) ** 2 + (yb - ya) ** 2)
-                t_star = min(max(0, t), 1)
-                rh = ra + t_star * (rb - ra)
-                diw = np.linalg.norm(rp - rh)
-                niw = (rp - rh) / diw
-                tiw = np.array([-niw[0], niw[1]])
-                fiw1[i] = fiw1[i] + Aw * np.exp((r[i] - diw) / Bw) * niw
-                if diw < r[i]:
-                    fiw2[i] = fiw2[i] + k1 * (r[i] - diw) * niw
-                    fiw3[i] = fiw3[i] - k2 * (r[i] - diw) * (vel[i] * tiw) * tiw
+            # # Walls forces
+            # for w in range(num_walls):
+            #     xp = position[i,0]
+            #     yp = position[i,1]
+            #     rp = np.array(position[i])
+            #     ra = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
+            #     ra = np.array(ra)
+            #     rb = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
+            #     rb = np.array(rb)
+            #     xa = ra[0]
+            #     ya = ra[1]
+            #     xb = rb[0]
+            #     yb = rb[1]
+            #     # a point on AB can be parametrized as s(t)=ra+t(tb-ta), t in [0,1]
+            #     # distance from s to p is phi(t)=||s(t)-p||
+            #     # d(phi^2) gives the t which minimizes the distance from p to the
+            #     # line in which AB lives. Since t in [0,1], t_star=min(max(0,t),1);
+            #     # and the distance from p to AB is ||s(t_star)-p||
+            #
+            #     t = ((xp - xa) * (xb - xa) + (yp - ya) * (yb - ya)) / ((xb - xa) ** 2 + (yb - ya) ** 2)
+            #     t_star = min(max(0, t), 1)
+            #     rh = ra + t_star * (rb - ra)
+            #     diw = np.linalg.norm(rp - rh)
+            #     niw = (rp - rh) / diw
+            #     tiw = np.array([-niw[0], niw[1]])
+            #     fiw1[i] = fiw1[i] + Aw * np.exp((r[i] - diw) / Bw) * niw
+            #     if diw < r[i]:
+            #         fiw2[i] = fiw2[i] + k1 * (r[i] - diw) * niw
+            #         fiw3[i] = fiw3[i] - k2 * (r[i] - diw) * (vel[i] * tiw) * tiw
 
     # Force due to the desire to move as v0
     F1 = fi0
