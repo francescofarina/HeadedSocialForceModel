@@ -1,51 +1,15 @@
 import numpy as np
-from HeadedSocialForceModel.python_scripts.aux_functions import parameters_load, waypoints_updater
-from HeadedSocialForceModel.python_scripts.launcher import pass_items
+from aux_functions import parameters_load
 
-
-def HSFM_system(t, state):
-    X = state['X']
-    waypoints = state['waypoints']
-    tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f = parameters_load()
-    N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership, X0 = pass_items() #TOGLIERE X0
+def HSFM_forces(X, e, N, map_walls, num_walls, r, m, v0):
+    tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f, alpha = parameters_load()
 
     # Positions and velocities
     position = np.zeros((N, 2))
     vel = np.zeros((N, 2))
     for i in range(N):
-        position[i,:] = [X[6 * i - 6], X[6 * i - 5]]
-        vel[i,:] = [X[6 * i - 3] * np.cos(X[6 * i - 4]), X[6 * i - 3] * np.sin(X[6 * i - 4])]
-
-    e, e_act, e_ind, e_n, e_seq = waypoints.waypoint_update(position, 0.5)
-
-    # Acting forces
-    F0, Fe, ang = HSFM_forces(X, e, position, vel)
-    FT = F0 + Fe
-
-    # Magnitude of F0
-    F_nV=(np.sqrt(np.sum(np.abs(F0)**2, 1)))
-
-    #  desired theta
-    thr=np.mod(ang, 2*np.pi).flatten()
-
-    # actual theta
-    th = np.mod(X.__getitem__(slice(2, None, 6)), 2*np.pi)
-
-    # angle to rotate
-    ang = th - thr
-    td=np.vstack((ang, ang+2*np.pi, ang-2*np.pi))
-    print(td)
-    # [~,I]=min(abs(td),[],2);
-    #
-    # dX=zeros(6*N,1);
-
-
-
-
-
-def HSFM_forces(X, e, position, vel):
-    tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f = parameters_load()
-    N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership, X0 = pass_items()  # TOGLIERE X0
+        position[i, :] = [X[6 * i - 6], X[6 * i - 5]]
+        vel[i, :] = [X[6 * i - 3] * np.cos(X[6 * i - 4]), X[6 * i - 3] * np.sin(X[6 * i - 4])]
 
     fi0 = np.zeros((N, 2))  # velocity force
     # Interindividual forces
@@ -60,7 +24,7 @@ def HSFM_forces(X, e, position, vel):
     for i in range(N):
         fi0[i,:] = m[i] * (v0[i] * e[i,:] - vel[i,:]) / tau
         vect = e[i,:]
-        ang[i] = np.arctan2(vect[1],vect[0])
+        ang[i] = np.arctan2(vect[1], vect[0])
         for j in range(N):
             if i != j:
                 rij = r[i] + r[j]
@@ -78,9 +42,9 @@ def HSFM_forces(X, e, position, vel):
                 xp = position[i,0]
                 yp = position[i,1]
                 rp = np.array(position[i])
-                ra = max([map_walls[2*w, 0], map_walls[2*w + 1,0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
+                ra = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
                 ra = np.array(ra)
-                rb = max([map_walls[2*w, 0], map_walls[2*w + 1,0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
+                rb = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
                 rb = np.array(rb)
                 xa = ra[0]
                 ya = ra[1]
@@ -100,8 +64,8 @@ def HSFM_forces(X, e, position, vel):
                 tiw = np.array([-niw[0], niw[1]])
                 fiw1[i] = fiw1[i] + Aw * np.exp((r[i] - diw) / Bw) * niw
                 if diw < r[i]:
-                    fiw2[i] = fiw2[i] + k1 * (r(i) - diw) * niw
-                    fiw3[i] = fiw3[i] - k2 * (r(i) - diw) * (vel[i] * tiw) * tiw
+                    fiw2[i] = fiw2[i] + k1 * (r[i] - diw) * niw
+                    fiw3[i] = fiw3[i] - k2 * (r[i] - diw) * (vel[i] * tiw) * tiw
 
     # Force due to the desire to move as v0
     F1 = fi0
@@ -113,10 +77,11 @@ def HSFM_forces(X, e, position, vel):
 
 
 
-N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership, X = pass_items() #TOGLIERE X0
-
-
-HSFM_system(1, X)
+# N, n_groups, map_walls, num_walls, r, m, J, v0, group_membership, alpha = pass_items() #TOGLIERE X0
+# X = np.zeros((6*12, 1)).flatten()
+# #
+# #
+# HSFM_system(1, X)
 
 
 

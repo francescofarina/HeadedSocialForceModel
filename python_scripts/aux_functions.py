@@ -31,8 +31,9 @@ def parameters_load():
     k2g = 200  # sideward group cohesion force strength
     d_o = 0.5  # sideward maximum distance from the center of mass
     d_f = 1  # forward maximum distance from the center of mass
+    alpha = 3
 
-    return tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f
+    return tau, A, B, Aw, Bw, k1, k2, kd, ko, k1g, k2g, d_o, d_f, alpha
 
 
 def initialization(n_groups, N, rm, rM, mm, mM, v0m, v0M, s, am):
