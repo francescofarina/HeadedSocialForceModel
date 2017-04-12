@@ -15,4 +15,4 @@ A preliminary version of the model has been presented in:
 
 You can cite these article if you use this code and our model for your research.
 
-At this time only the MATLAB implementation of the model is available. However, a Python implementation is under development.
+Both a MATLAB and a Python implementation are available.
