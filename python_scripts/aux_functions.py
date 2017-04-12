@@ -42,7 +42,7 @@ def initialization(n_groups, N, rm, rM, mm, mM, v0m, v0M, s, am):
     # Number of walls
     double_num_walls, aux = map_walls.shape
     num_walls = int(double_num_walls / 2)
-    map_walls, num_walls,
+
     v0 = v0m + (v0M - v0m) * np.random.rand(N, 1)  # random desired speed
     v = 0 * np.ones((N, 2))  # initial speed
     th = 2 * np.pi * np.random.rand(N, 1) - np.pi  # initial orientation
@@ -118,7 +118,7 @@ class waypoints_updater():
             e[i, :] = vect / vect_norm
             current_index = self.e_ind[int(self.group_membership[i])][i - sum(self.n_groups[0:int(self.group_membership[i])])]
 
-            if vect_norm <= coef and current_index < self.e_n[int(self.group_membership[i])]:
+            if vect_norm <= coef and current_index < self.e_n[int(self.group_membership[i])]-1:
                 current_index += 1
                 curr_wayp = self.e_seq[int(self.group_membership[i])][:, current_index].transpose()
                 vect = curr_wayp - position[i]
@@ -128,7 +128,7 @@ class waypoints_updater():
                 self.e_ind[int(self.group_membership[i])][i - sum(self.n_groups[0:int(self.group_membership[i])])] = current_index
                 self.e_act[int(self.group_membership[i])][i - sum(self.n_groups[0:int(self.group_membership[i])])] = curr_wayp
 
-            # if vect_norm <= coef and current_index == e_n[group_membership[i]]:
-            #     e(i,:)=((1-exp(-5*norm(e_act{1}(i,:)'-position(i,:)')))/(1+exp(-5*norm(e_act{1}(i,:)'-position(i,:)'))))*((e_act{1}(i,:)'-position(i,:)')/norm(e_act{1}(i,:)'-position(i,:)'));
+            if vect_norm <= coef and current_index == self.e_n[int(self.group_membership[i])]:
+                e[i, :] = ((1 - np.exp(-5 * vect_norm))/(1+np.exp(-5 * vect_norm))) * (vect / vect_norm)
 
-        return e, self.e_act, self.e_ind, self.e_n, self.e_seq
+        return e
