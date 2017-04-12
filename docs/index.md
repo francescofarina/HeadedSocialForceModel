@@ -13,9 +13,37 @@ A preliminary version of the model has been presented in:
 
 You can cite these article if you use this code and our model for your research.
 
-At this time only the MATLAB implementation of the model is available. However, a Python implementation is under development.
+Both a MATLAB and a Python 3 implementation are available.
 
-## Guideline to the code
+## Guideline to the Python 3 code
+I suggest to create a python virtual environment through `virtualenv`. If you do not have `virtualenv` installed then install it writing in your terminal
+
+    pip3 install virtualenv
+
+Create a new directory *dir* and clone the repository inside it.
+In the same directory create a new environment
+
+    virtualenv ENV
+    
+Then activate it
+
+    source ENV/bin/activate
+    
+and install the required packages
+
+    pip install numpy matplotlib scipy
+    
+Now go to the python scripts directory
+
+    cd HeadedSocialForceModel/python_scripts
+    
+Here you can run the file launcher.py.
+
+    python launcher.py
+
+If you want to do other simulations or change the model parameter follow the instructions in launcher.py and modify the parameters in aux_functions.py.
+
+## Guideline to the MATLAB code
 Open the function map_def.m and follow the instructions to define a map.
 
 Open launcher.m and for each group to be created, insert:
