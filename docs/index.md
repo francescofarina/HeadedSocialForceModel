@@ -16,7 +16,7 @@ You can cite these article if you use this code and our model for your research.
 Both a MATLAB and a Python 3 implementation are available.
 
 ## Guideline to the Python 3 code
-I suggest to create a python virtual environment through `virtualenv`. If you do not have `virtualenv` installed then install it writing in your terminal
+Create a python virtual environment through `virtualenv`. If you do not have `virtualenv` installed, install it by writing in your terminal
 
     pip3 install virtualenv
 
@@ -33,7 +33,7 @@ and install the required packages
 
     pip install numpy matplotlib scipy
     
-Now go to the python scripts directory
+Now, go to the python scripts directory
 
     cd HeadedSocialForceModel/python_scripts
     
