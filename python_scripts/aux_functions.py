@@ -91,6 +91,9 @@ def initialization(n_groups, N, rm, rM, mm, mM, v0m, v0M, s, am):
             d.append(int(np.linalg.norm(rp - rh) <= r[i]))
         if sum(d) == 0:
             p[i] = [pos[0], pos[1], v[i, 0], v[i, 1], r[i], m[i]]
+
+            # New version of Numpy raises error, downgrade Numpy to version 1.21.1
+
             X0 = np.append(X0, [pos[0], pos[1], th[i], np.linalg.norm(v[i, :]), 0, omg])
             i = i + 1
 
