@@ -5,6 +5,7 @@ def map_def():
     segments = {}
     segments[0] = np.array([[0, 0], [0, 25]]).transpose()
     segments[1] = np.array([[5, 0], [5, 25]]).transpose()
+    segments[2] = np.array([[1.5, 5], [3.5, 9]]).transpose()
     # segments_number = segments.__len__()
 
     map_walls = np.array([[0,0]])
