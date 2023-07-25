@@ -43,7 +43,7 @@ def HSFM_forces(X, e, N, map_walls, num_walls, r, m, v0):
                 xp = position[i,0]
                 yp = position[i,1]
                 rp = np.array(position[i])
-                ra = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
+                ra = min([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
                 ra = np.array(ra)
                 rb = max([map_walls[2*w, 0], map_walls[2*w + 1, 0]], [map_walls[2*w, 1], map_walls[2*w + 1,1]])
                 rb = np.array(rb)

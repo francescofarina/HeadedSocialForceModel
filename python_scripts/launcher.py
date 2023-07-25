@@ -5,6 +5,10 @@ import config
 from aux_functions import parameters_load, initialization, waypoints_updater
 from HSFM_functions import HSFM_system
 
+from screeninfo import get_monitors
+import matplotlib.pyplot as plt
+from matplotlib.animation import FFMpegWriter
+
 # Simulation time
 TF = 20
 t_fine = 1/30  # time accuracy
@@ -104,4 +108,48 @@ for i in range(N):
 plt.axis('equal')
 plt.savefig('trajectories.eps')
 
+## MOVIE
+metadata = dict(title="HSFM Simulation", artist="Code")
+writer = FFMpegWriter(fps=60, metadata=metadata)
 
+tspan = np.arange(0, TF, t_fine)
+cir = np.arange(0,2*np.pi,0.01)
+
+color=[]
+if N==n_groups[1]:
+    # Only one group of people (random color assigned to each individual)
+    color=np.random.rand(N,3)
+else:
+    # Multiple groups of people (a different color for each group)
+    for i in range(0,len(n_groups)):
+        color_group = np.random.rand(1,3)
+        if i == 0:
+            color = np.tile(color_group, (n_groups[i],1))
+        else:
+            color = np.vstack((color, np.tile(color_group, (n_groups[i],1))))
+
+for m in get_monitors():
+    height = m.height
+    width = m.width
+px = 1/plt.rcParams['figure.dpi']
+
+fig = plt.figure(figsize=(width*px, height*px))
+ax = fig.add_subplot()
+
+with writer.saving(fig, "simulation.mp4", 300):
+    for tt in range(0,len(tspan)):
+        # Turn off axis
+        ax.axis('off')
+        plt.axis('equal')
+        # Set background
+        rect = fig.patch
+        rect.set_facecolor('white')
+        # Plot the walls
+        for i in range(0,num_walls):
+            ax.plot(map_walls[2*i,:], map_walls[2*i+1,:],color='k',linewidth=2)
+        # Plot the pedestrians represented as circles
+        for i in range(0,N):
+            ax.plot(r[i]*np.cos(cir)+X[tt,6*i],r[i]*np.sin(cir)+X[tt,6*i+1],color=color[i], linewidth=2)
+            ax.plot(r[i]*np.cos(X[tt,6*i+2])+X[tt,6*i],r[i]*np.sin(X[tt,6*i+2])+X[tt,6*i+1],'ok')
+        writer.grab_frame()
+        plt.cla()

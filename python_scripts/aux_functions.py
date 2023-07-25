@@ -5,6 +5,7 @@ def map_def():
     segments = {}
     segments[0] = np.array([[0, 0], [0, 25]]).transpose()
     segments[1] = np.array([[5, 0], [5, 25]]).transpose()
+    segments[2] = np.array([[1.5, 5], [3.5, 9]]).transpose()
     # segments_number = segments.__len__()
 
     map_walls = np.array([[0,0]])
@@ -91,6 +92,9 @@ def initialization(n_groups, N, rm, rM, mm, mM, v0m, v0M, s, am):
             d.append(int(np.linalg.norm(rp - rh) <= r[i]))
         if sum(d) == 0:
             p[i] = [pos[0], pos[1], v[i, 0], v[i, 1], r[i], m[i]]
+
+            # New version of Numpy raises error, downgrade Numpy to version 1.21.1
+
             X0 = np.append(X0, [pos[0], pos[1], th[i], np.linalg.norm(v[i, :]), 0, omg])
             i = i + 1
 
